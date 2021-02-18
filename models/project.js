@@ -8,7 +8,7 @@ var projectSchema = new mongoose.SchemaType({
       required: true
    },
    dueDate: {
-      type: date
+      type: Date
    },
    course: {
       type: String,
@@ -16,6 +16,7 @@ var projectSchema = new mongoose.SchemaType({
    },
    status:{
       type: String,
+      default: 'To-Do'
    }
 })
 
