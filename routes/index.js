@@ -14,6 +14,9 @@ router.get('/about', (req, res, next) => {
     pageText: 'This is some dynamic text on a page.',
   });
 });
+router.get('/course', function(req, res, next) {
+  res.render('course', { title: 'Courses' });
+});
 
 // exports makes the file public
 module.exports = router;

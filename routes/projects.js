@@ -1,11 +1,10 @@
 //require express
 const express = require('express')
-const project = require('../models/project')
 const router = express.Router()
 
 // add project model for CRUD operations
-// const mongoose = require('mongoose')
 const Project = require('../models/project')
+const Course = require('../models/course')
 
 // get / projects
 router.get('/', (req, res, next) => {
@@ -24,9 +23,20 @@ router.get('/', (req, res, next) => {
    })
 })
 
-//GET / projects/add
+/* GET /projects/add */
 router.get('/add', (req, res, next) => {
-   res.render('projects/add', {title: 'Project Details'})
+   // use Course model to fetch list of courses for dropdown
+   Course.find((err, courses) => {
+       if (err) {
+           console.log(err)
+       }
+       else {
+           res.render('projects/add', { 
+               title: 'Project Details',
+               courses: courses
+           })            
+       }
+   }).sort({corseCode: 1})
 })
 
 //POST /projects/add
@@ -42,6 +52,46 @@ router.post('/add', (req, res, next) => {
       }
       else {
          // if successful redirect to projects index
+         res.redirect('/projects')
+      }
+   })
+})
+
+// GET /projects/edit/
+router.get('/edit/:_id', (req, res, next) => {
+   Project.findById(req.params._id, (err, project) => {
+       if (err) {
+           console.log(err)
+       }
+       else {
+           // get courses for dropdown
+           Course.find((err, courses) => {
+               if (err) {
+                   console.log(err)
+               }
+               else {
+                   res.render('projects/edit', {
+                       title: 'Project Details',
+                       project: project,
+                       courses: courses
+                   })  
+               }
+           }).sort({courseCode: 1})
+       }
+   })
+})
+
+// post /projects/edit/
+router.post('/edit/:_id', (req, res, next) => {
+   Project.findOneAndUpdate({ _id: req.params._id}, {
+      name: req.body.name,
+      dueDate: req.body.dueDate,
+      course: req.body.course,
+      status: req.body.status
+   },(err, project) => {
+      if(err){
+         console.log(err);
+      }else{
          res.redirect('/projects')
       }
    })

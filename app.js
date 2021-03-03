@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var projectRouter = require('./routes/projects');
+var courseRouter = require('./routes/courses');
 
 var app = express();
 
@@ -23,6 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/projects', projectRouter);
+app.use('/courses', courseRouter);
 
 // mongodb connection
 const mongoose = require('mongoose');
@@ -38,6 +40,15 @@ mongoose.connect(config.db, {
       console.log('MongoDB Connection Failed')
 })
 
+//  hbs helper function to pre-select a correct dropdown
+const hbs = require('hbs')
+hbs.registerHelper('createOption', (currentValue, selectedValue) => {
+  var selectedProperty = ''
+  if(currentValue == selectedValue){
+    selectedProperty = ' selected'
+  }
+  return new hbs.SafeString('<option' + selectedProperty + '></option>')
+})
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
