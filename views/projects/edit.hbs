@@ -20,9 +20,9 @@
    <fieldset>
       <label for="status" class="col-2">Status:</label>
       <select name="status" id="status">
-         <option>To-Do</option>
-         <option>Doing</option>
-         <option>Done</option>
+         {{createOption 'To-Do' project.status}}
+         {{createOption 'Doing' project.status}}
+         {{createOption 'Done' project.status}}
       </select>
    </fieldset>
    <button class="offset-3 btn btn-primary">Save</button>

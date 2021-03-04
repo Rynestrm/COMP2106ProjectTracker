@@ -9,6 +9,10 @@ var usersRouter = require('./routes/users');
 var projectRouter = require('./routes/projects');
 var courseRouter = require('./routes/courses');
 
+// passport libraries for auth
+const passport = require("passport")
+const session = require("express-session")
+
 var app = express();
 
 // view engine setup
@@ -20,6 +24,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// configure session & passport BEFORE mapping the controllers. required for controllers to use passport
+app.use(session({
+  secret: 'w21Pr0jectTracker',
+  resave: false,
+  saveUninitialized: false
+}))
+
+app.use(passport.initialize())
+app.use(passport.session())
+
+// link passport to our model that extends passport-local-mongoose
+const User = require('./models/user')
+passport.use(User.createStrategy())
+// set passport so it read / write user data to / from session object
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -49,6 +70,11 @@ hbs.registerHelper('createOption', (currentValue, selectedValue) => {
   }
   return new hbs.SafeString('<option' + selectedProperty + '></option>')
 })
+
+hbs.registerHelper('shortDate', (dateVal) => {
+  return new hbs.SafeString(dateVal.toLocaleDateString('en-US'))
+})
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
