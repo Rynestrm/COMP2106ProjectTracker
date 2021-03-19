@@ -4,7 +4,8 @@ var router = express.Router();
 
 //user model fo auth
 const User = require('../models/user')
-const passport = require('passport')
+const passport = require('passport');
+const { authenticate } = require('passport');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -67,6 +68,22 @@ router.post('/login', passport.authenticate('local', {
   failureRedirect: '/login',
   failureMessage: 'Invalid Login' // this gets stored in session var
 }))
+
+// GET / logout
+router.get('/logout', (req, res,next) =>{
+  req.logout()
+  res.redirect('/login')
+})
+
+// GET /github
+router.get('/github', passport.authenticate('github', {scope: ['user.email']}))
+
+// GET /github/callback
+router.get('/github/callback', passport.authenticate('github', {
+  failureRedirect: '/login'}),
+    (req, res, next) => {
+      res.redirect('/projects')
+    })
 
 // exports makes the file public
 module.exports = router;

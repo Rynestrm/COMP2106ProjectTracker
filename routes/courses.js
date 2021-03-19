@@ -4,7 +4,10 @@ const router = express.Router();
 const Course = require("../models/course");
 
 router.get('/add', (req, res, next) => {
-   res.render('courses/add', {title: 'Add A Course'})
+   res.render('courses/add', {
+    title: 'Add A Course',
+    user:req.user
+})
 })
 
 router.post('/add', (req, res, next) => {
