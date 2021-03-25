@@ -1,36 +1,30 @@
-// use express dependency and its routing feature to parse urls
+// use express dependency and its Routing feature to parse url's
 var express = require('express');
 var router = express.Router();
 
-//user model fo auth
+// User model & passport for auth
 const User = require('../models/user')
-const passport = require('passport');
-const { authenticate } = require('passport');
+const passport = require('passport')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Project Tracker' });
 });
 
-//GET /about
+/* GET /about */
 router.get('/about', (req, res, next) => {
-  res.render('about', { 
-    title: 'About',
-    pageText: 'This is some dynamic text on a page.',
-  });
-});
-router.get('/course', function(req, res, next) {
-  res.render('course', { title: 'Courses' });
-});
+  res.render('about', {
+    title: 'About this Site',
+    pageText: 'Here is some dynamic info from the controller'
+  })
+})
 
-//GET /register
+/* GET /register */
 router.get('/register', (req, res, next) => {
-  res.render('register', { 
-    title: 'Please Create an account',
-  });
-});
+  res.render('register', { title: 'Please create an account' })
+})
 
-//Post /register
+/* POST /register */
 router.post('/register', (req, res, next) => {
   // invoke User model which extends passport-local-mongoose to create a new user in the db
   // password gets passed as separate param for hashing
@@ -49,7 +43,7 @@ router.post('/register', (req, res, next) => {
   })
 })
 
-//GET /login
+/* GET /login */
 router.get('/login', (req, res, next) => {
   // check for login error messages in the session object and display them if any
   let messages = req.session.messages || [];
@@ -61,29 +55,28 @@ router.get('/login', (req, res, next) => {
   })
 })
 
-//Post /login
-// use passport to authenticate the login attempt
+/* POST /login */ // use passport to authenticate the login attempt
 router.post('/login', passport.authenticate('local', {
   successRedirect: '/projects',
   failureRedirect: '/login',
   failureMessage: 'Invalid Login' // this gets stored in session var
 }))
 
-// GET / logout
-router.get('/logout', (req, res,next) =>{
+/* GET /logout */ // sign user out
+router.get('/logout', (req, res, next) => {
   req.logout()
   res.redirect('/login')
 })
 
-// GET /github
-router.get('/github', passport.authenticate('github', {scope: ['user.email']}))
+/* GET /github - try github auth */
+router.get('/github', passport.authenticate('github', { scope: ['user.email']}))
 
-// GET /github/callback
+/* GET /github/callback - what to do after GitHub login */
 router.get('/github/callback', passport.authenticate('github', {
   failureRedirect: '/login'}),
     (req, res, next) => {
       res.redirect('/projects')
     })
 
-// exports makes the file public
+// make the controller public
 module.exports = router;
